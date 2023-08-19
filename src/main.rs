@@ -1,44 +1,38 @@
 use reqwasm::http::Request;
+use sycamore::futures::create_resource;
 use sycamore::prelude::*;
 use sycamore::suspense::Suspense;
+use sycamore_router::{HistoryIntegration, Route, Router, RouterProps};
 
-async fn fetch_data(id: &str) -> Result<String, reqwasm::Error> {
-    let url = format!("https://api.mangadex.org/manga/{id}/feed");
-    let resp = Request::get(&url).send().await?;
-    let body = resp.text().await?;
-    Ok(body)
+#[derive(Route)]
+enum AppRoutes {
+    #[to("/")]
+    Home,
+    #[to("/pokemon/<id>")]
+    Pokemon { id: String },
+    #[not_found]
+    NotFound,
 }
 
 #[component]
-async fn Data<G: Html>(cx: Scope<'_>) -> View<G> {
-    let data = fetch_data("bd6d0982-0091-4945-ad70-c028ed3c0917")
-        .await
-        .unwrap_or_default();
-
+fn App<G: Html>(cx: Scope) -> View<G> {
     view! { cx,
-        pre { (data) }
-    }
-}
-
-#[component]
-async fn App<G: Html>(cx: Scope<'_>) -> View<G> {
-    // let state = create_signal(cx, 0);
-    // let increment = |_| state.set(*state.get() + 1);
-    // let decrement = |_| state.set(*state.get() - 1);
-
-    view! { cx,
-        // p { "Hallo, World! " (state.get()) }
-        // button(on:click=increment) { "+" }
-        // button(on:click=decrement) { "-" }
-        div {
-            p(class="border-2 border-red-500 rounded-lg") { "Manga data" }
-            Suspense(fallback=view! { cx, "Loading..." }) {
-                Data { }
-            }
-        }
+        Router(
+            integration=HistoryIntegration::new(),
+            view=|cx, route: &ReadSignal<AppRoutes>| view! { cx, (
+                (match route.get().as_ref() {
+                    AppRoutes::Home => view! { cx, div { "Home" } },
+                    AppRoutes::Pokemon { id } => view! { cx, div { "Pokemon" } },
+                    AppRoutes::NotFound => view! { cx, div { "Not Found" } },
+                })
+            ) }
+        )
     }
 }
 
 fn main() {
+    console_error_panic_hook::set_once();
+    console_log::init_with_level(log::Level::Debug).unwrap();
+
     sycamore::render(App);
 }
