@@ -524,6 +524,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "sycamore-pokedex"
+version = "0.1.0"
+dependencies = [
+ "console_error_panic_hook",
+ "console_log",
+ "log",
+ "pokeapi-types",
+ "reqwasm",
+ "serde",
+ "serde_json",
+ "sycamore",
+ "sycamore-router",
+]
+
+[[package]]
 name = "sycamore-reactive"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -559,21 +574,6 @@ dependencies = [
  "quote",
  "syn 1.0.109",
  "unicode-xid",
-]
-
-[[package]]
-name = "sycamore-todo"
-version = "0.1.0"
-dependencies = [
- "console_error_panic_hook",
- "console_log",
- "log",
- "pokeapi-types",
- "reqwasm",
- "serde",
- "serde_json",
- "sycamore",
- "sycamore-router",
 ]
 
 [[package]]
